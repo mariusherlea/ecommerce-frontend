@@ -1,19 +1,17 @@
-// app/products/[slug]/page.tsx
-import { notFound } from "next/navigation";
+import ProductDetails from "./ProductDetails";
 
 type Product = {
   id: number;
   documentId: string;
   title: string;
   slug: string;
-  description: any; // poți pune PortableText dacă îl randezi
+  description: any;
   price: number;
   inStock: string;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
 };
-
 
 async function getProduct(slug: string): Promise<Product | null> {
   const res = await fetch(
@@ -29,20 +27,10 @@ async function getProduct(slug: string): Promise<Product | null> {
   return data.data.length > 0 ? data.data[0] : null;
 }
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
 
-  if (!product) return notFound();
+  if (!product) return <p className="p-6">Produsul nu a fost găsit.</p>;
 
-  return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
-      <p className="text-gray-700 mb-4">{product.price} lei</p>
-      <p className="text-sm text-gray-500">In stoc: {product.inStock}</p>
-    </div>
-  );
+  return <ProductDetails product={product} />;
 }
