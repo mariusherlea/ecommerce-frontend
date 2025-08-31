@@ -1,4 +1,6 @@
 import { ReactNode } from "react";
+import "./globals.css";
+
 import { CartProvider } from "../context/CartContext";
 import Navbar from "../components/NavBar";
 export default function RootLayout({

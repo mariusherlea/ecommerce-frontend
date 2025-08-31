@@ -1,6 +1,6 @@
 export default function HomePage() {
   return (
-    <main className="p-6">
+    <main className="p-10 bg-yellow-500 text-white text-3xl font-bold">
       <h1 className="text-2xl font-bold">Bine ai venit!</h1>
       <p className="mt-4">Vizitează <a href="/products" className="text-blue-600 underline">produsele</a>.</p>
     </main>
