@@ -1,11 +1,18 @@
 import { ReactNode } from "react";
 import { CartProvider } from "../context/CartContext";
-
-export default function RootLayout({ children }: { children: ReactNode }) {
+import Navbar from "../components/NavBar";
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
+    <html lang="ro">
       <body>
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <Navbar />
+          <main className="p-6">{children}</main>
+        </CartProvider>
       </body>
     </html>
   );
