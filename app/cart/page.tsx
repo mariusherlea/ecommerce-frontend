@@ -3,7 +3,7 @@
 import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -17,24 +17,36 @@ export default function CartPage() {
         <>
           <ul className="space-y-4">
             {cart.map((item) => (
-              <li key={item.id} className="border p-4 rounded shadow">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h2 className="text-lg font-semibold">{item.title}</h2>
-                    <p>Cantitate: {item.quantity}</p>
-                    <p>Preț: {item.price} lei</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold mb-2">
-                      Total: {item.price * item.quantity} lei
-                    </p>
+              <li key={item.id} className="border p-4 rounded shadow flex justify-between items-center">
+                <div>
+                  <h2 className="text-lg font-semibold">{item.title}</h2>
+                  <p>Preț: {item.price} lei</p>
+                  <div className="flex items-center gap-2 mt-2">
                     <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                      onClick={() => decreaseQuantity(item.id)}
+                      className="px-2 py-1 bg-gray-300 rounded"
                     >
-                      Șterge
+                      -
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      onClick={() => increaseQuantity(item.id)}
+                      className="px-2 py-1 bg-gray-300 rounded"
+                    >
+                      +
                     </button>
                   </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold">
+                    Total: {item.price * item.quantity} lei
+                  </p>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="mt-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Șterge
+                  </button>
                 </div>
               </li>
             ))}
@@ -43,7 +55,7 @@ export default function CartPage() {
           <div className="mt-6 flex justify-between items-center">
             <button
               onClick={clearCart}
-              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
               Golește coșul
             </button>
