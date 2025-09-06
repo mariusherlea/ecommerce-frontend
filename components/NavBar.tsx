@@ -14,7 +14,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="bg-green-400 shadow p-4 flex justify-between items-center relative">
+    <nav className="sticky top-0 z-50 bg-green-400 shadow p-4 flex justify-between items-center relative">
       <Link href="/" className="text-xl font-bold">
         🛒 MyShop
       </Link>
