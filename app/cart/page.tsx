@@ -7,6 +7,18 @@ export default function CartPage() {
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
+  const handleCheckout = async () => {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cart }),
+    });
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url; // redirect către Stripe
+    }
+  };
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Coșul tău</h1>
@@ -62,6 +74,12 @@ export default function CartPage() {
             <div className="text-xl font-bold">
               Total general: {total} lei
             </div>
+            <button
+            onClick={handleCheckout}
+            className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Plătește acum
+          </button>
           </div>
         </>
       )}
