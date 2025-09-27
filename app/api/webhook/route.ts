@@ -27,34 +27,37 @@ export async function POST(req: Request) {
     console.log("💰 Payment successful for session:", session.id);
 
     try {
-  // extragem line_items (produsele)
-  const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+      // extragem produsele cumpărate
+      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-    },
-    body: JSON.stringify({
-      data: {
-        stripeSessionId: session.id,
-        email: session.customer_email,
-        total: session.amount_total ? session.amount_total / 100 : 0,
-        stare: "paid",
-        items: lineItems.data.map((item) => ({
-          name: item.description,
-          quantity: item.quantity,
-          price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
-        })),
-      },
-    }),
-  });
+      // construim array-ul compatibil cu Strapi (componenta order-item)
+      const items = lineItems.data.map((item) => ({
+        name: item.description,
+        quantity: item.quantity,
+        price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
+      }));
 
-  const strapiResponse = await res.json();
-  console.log("📦 Răspuns Strapi:", strapiResponse);
-} 
- catch (err) {
+      // trimitem comanda în Strapi
+      const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+        },
+        body: JSON.stringify({
+          data: {
+            stripeSessionId: session.id,
+            email: session.customer_email,
+            total: session.amount_total ? session.amount_total / 100 : 0,
+            stare: "paid",
+            items, // 👈 acum trimitem componenta
+          },
+        }),
+      });
+
+      const strapiResponse = await res.json();
+      console.log("📦 Răspuns Strapi:", JSON.stringify(strapiResponse, null, 2));
+    } catch (err) {
       console.error("❌ Eroare salvare comandă în Strapi:", err);
     }
   }
