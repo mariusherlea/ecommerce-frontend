@@ -2,11 +2,17 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
+export const config = {
+  api: {
+    bodyParser: false, // Stripe needs raw body for signature verification
+  },
+};
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature") as string;
-  const body = await req.text();
+  const body = Buffer.from(await req.arrayBuffer()); // 👈 important!
 
   let event: Stripe.Event;
 
@@ -23,21 +29,11 @@ export async function POST(req: Request) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-
     console.log("💰 Payment successful for session:", session.id);
 
     try {
-      // extragem produsele cumpărate
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
-      // construim array-ul compatibil cu Strapi (componenta order-item)
-      const items = lineItems.data.map((item) => ({
-        name: item.description,
-        quantity: item.quantity,
-        price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
-      }));
-
-      // trimitem comanda în Strapi
       const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders`, {
         method: "POST",
         headers: {
@@ -50,13 +46,17 @@ export async function POST(req: Request) {
             email: session.customer_email,
             total: session.amount_total ? session.amount_total / 100 : 0,
             stare: "paid",
-            items, // 👈 acum trimitem componenta
+            items: lineItems.data.map((item) => ({
+              name: item.description,
+              quantity: item.quantity,
+              price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
+            })),
           },
         }),
       });
 
       const strapiResponse = await res.json();
-      console.log("📦 Răspuns Strapi:", JSON.stringify(strapiResponse, null, 2));
+      console.log("📦 Răspuns Strapi:", strapiResponse);
     } catch (err) {
       console.error("❌ Eroare salvare comandă în Strapi:", err);
     }
