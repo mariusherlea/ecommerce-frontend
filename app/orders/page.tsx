@@ -14,6 +14,8 @@ type Order = {
   email: string;
   total: number;
   stare: string;
+  shippingAddress?: string | null;
+  billingAddress?: string | null;
   items: OrderItem[];
   createdAt: string;
 };

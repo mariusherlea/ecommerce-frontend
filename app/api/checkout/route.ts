@@ -1,4 +1,4 @@
-//app/api/checkout/route.ts
+// app/api/checkout/route.ts
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -9,7 +9,6 @@ export async function POST(req: Request) {
     const { cart } = await req.json();
 
     const session = await stripe.checkout.sessions.create({
-      // 👇 Stripe decide automat metoda (nu mai trebuie "payment_method_types")
       mode: "payment",
 
       line_items: cart.map((item: any) => ({
@@ -23,13 +22,16 @@ export async function POST(req: Request) {
         quantity: item.quantity,
       })),
 
-      // ✅ Culege email + adresă
+      // ✅ Afișează formular complet de livrare + facturare
+      billing_address_collection: "required",
+      shipping_address_collection: {
+        allowed_countries: ["RO", "HU", "BG", "DE", "NL", "FR", "IT"], // poți modifica lista
+      },
+
+      // ✅ Stripe va crea mereu un customer nou și va salva emailul
       customer_creation: "always",
-      billing_address_collection: "auto",
 
-      // 👇 Stripe afișează automat câmpul de email
-      // (nu mai folosim customer_email: null)
-
+      // ✅ Redirecționări
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
     });
