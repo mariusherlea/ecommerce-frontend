@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature") as string;
-  const body = Buffer.from(await req.arrayBuffer()); // 👈 important!
+  const body = Buffer.from(await req.arrayBuffer());
 
   let event: Stripe.Event;
 
@@ -32,8 +32,27 @@ export async function POST(req: Request) {
     console.log("💰 Payment successful for session:", session.id);
 
     try {
+      // 1️⃣ Luăm lista de produse cumpărate
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
+      // 2️⃣ Extragem emailul și adresa
+      let customerEmail = session.customer_email || null;
+      let customerAddress = null;
+
+      if (session.customer) {
+        const customer = await stripe.customers.retrieve(session.customer as string);
+        if (typeof customer !== "string") {
+          customerEmail = customer.email || customerEmail;
+          customerAddress = customer.address || null;
+        }
+      }
+
+      // 3️⃣ Construim adresa într-un string lizibil
+      const formattedAddress = customerAddress
+        ? `${customerAddress.line1 || ""}, ${customerAddress.city || ""}, ${customerAddress.country || ""}`
+        : null;
+
+      // 4️⃣ Trimitem comanda către Strapi
       const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders`, {
         method: "POST",
         headers: {
@@ -43,7 +62,8 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           data: {
             stripeSessionId: session.id,
-            email: session.customer_email,
+            email: customerEmail,
+            address: formattedAddress,
             total: session.amount_total ? session.amount_total / 100 : 0,
             stare: "paid",
             items: lineItems.data.map((item) => ({

@@ -1,3 +1,4 @@
+//app/products/[slug]/page.tsx
 import ProductDetails from "./ProductDetails";
 
 type Product = {
@@ -27,10 +28,14 @@ async function getProduct(slug: string): Promise<Product | null> {
   return data.data.length > 0 ? data.data[0] : null;
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-  const product = await getProduct(params.slug);
 
+
+export default async function ProductPage(props: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await props.params; // 👈 Next.js 15 requirement
+
+  const product = await getProduct(slug);
   if (!product) return <p className="p-6">Produsul nu a fost găsit.</p>;
-
-  return <ProductDetails product={product} />;
+return <ProductDetails product={product} />;
 }
