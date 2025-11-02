@@ -65,28 +65,31 @@ const billing = (session.customer_details?.address || null) as Partial<Stripe.Ad
         formatAddress(billing) || formatAddress(customerAddress);
 
       // 🔹 4. Trimitem comanda completă către Strapi
-      const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
-        },
-        body: JSON.stringify({
-          data: {
-            stripeSessionId: session.id,
-            email: customerEmail,
-            shippingAddress,
-            billingAddress,
-            total: session.amount_total ? session.amount_total / 100 : 0,
-            stare: "paid",
-            items: lineItems.data.map((item) => ({
-              name: item.description,
-              quantity: item.quantity,
-              price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
-            })),
-          },
-        }),
-      });
+     const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.STRAPI_API_TOKEN}`,
+  },
+  body: JSON.stringify({
+    data: {
+      stripeSessionId: session.id,
+      email: customerEmail,
+      phone:
+        session.custom_fields?.find((f: any) => f.key === "phone")?.text?.value ||
+        null,
+      shippingAddress,
+      billingAddress,
+      total: session.amount_total ? session.amount_total / 100 : 0,
+      stare: "paid",
+      items: lineItems.data.map((item) => ({
+        name: item.description,
+        quantity: item.quantity,
+        price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
+      })),
+    },
+  }),
+});
 
       const strapiResponse = await res.json();
       console.log("📦 Răspuns Strapi:", strapiResponse);

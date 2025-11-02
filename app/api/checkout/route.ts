@@ -2,7 +2,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string
+);
 
 export async function POST(req: Request) {
   try {
@@ -22,16 +23,23 @@ export async function POST(req: Request) {
         quantity: item.quantity,
       })),
 
-      // ✅ Afișează formular complet de livrare + facturare
-      billing_address_collection: "required",
+      // ✅ colectăm email și adrese
+      customer_creation: "always",
+      billing_address_collection: "auto",
       shipping_address_collection: {
-        allowed_countries: ["RO", "HU", "BG", "DE", "NL", "FR", "IT"], // poți modifica lista
+        allowed_countries: ["RO", "DE", "FR", "NL", "IT"],
       },
 
-      // ✅ Stripe va crea mereu un customer nou și va salva emailul
-      customer_creation: "always",
+      // ✅ câmp personalizat — PHONE
+      custom_fields: [
+        {
+          key: "phone",
+          label: { type: "custom", custom: "Telefon" },
+          type: "text",
+          optional: false,
+        },
+      ],
 
-      // ✅ Redirecționări
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
     });
