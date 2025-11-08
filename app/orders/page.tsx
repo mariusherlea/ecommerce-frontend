@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type OrderItem = {
   name: string;
@@ -25,8 +26,22 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [authorized, setAuthorized] = useState(false);
+  const router = useRouter();
 
+  // ✅ totul într-un singur useEffect
   useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+
+    // dacă tokenul e invalid → redirect
+    if (token !== process.env.NEXT_PUBLIC_ADMIN_ACCESS_KEY) {
+      router.push("/");
+      return;
+    }
+
+    // altfel autorizăm și aducem comenzile
+    setAuthorized(true);
+
     async function fetchOrders() {
       try {
         const url = `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders?populate=items`;
@@ -37,7 +52,6 @@ export default function OrdersPage() {
         });
 
         if (!res.ok) {
-          setError(`Eroare la preluarea comenzilor: ${res.status}`);
           throw new Error(`Eroare la preluarea comenzilor: ${res.status}`);
         }
 
@@ -52,7 +66,9 @@ export default function OrdersPage() {
     }
 
     fetchOrders();
-  }, []);
+  }, [router]);
+
+  if (!authorized) return null;
 
   if (loading) return <p className="p-6">Se încarcă comenzile...</p>;
 
@@ -116,7 +132,6 @@ export default function OrdersPage() {
         ))}
       </div>
 
-      {/* 🔍 Modal detalii comandă extins */}
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg relative">
