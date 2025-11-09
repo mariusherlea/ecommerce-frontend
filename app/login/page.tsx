@@ -28,6 +28,17 @@ export default function LoginPage() {
       const data = await res.json();
       console.log("🔐 Strapi login response:", data);
 
+    if (data.jwt) {
+  localStorage.setItem("jwt", data.jwt);
+  localStorage.setItem("user", JSON.stringify(data.user));
+
+    // 👇 notifică Navbar-ul să se reîncarce
+  window.dispatchEvent(new Event("userLogin"));
+
+  router.push("/profile"); // redirecționează la profil
+}
+
+
       if (!res.ok) {
         throw new Error(data.error?.message || "Login failed");
       }
