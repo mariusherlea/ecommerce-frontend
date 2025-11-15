@@ -8,11 +8,16 @@ export default function CartPage() {
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cart }),
-    });
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  const res = await fetch("/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cart,
+      user, // trimitem datele utilizatorului
+    }),
+  });
 
     const data = await res.json();
     if (data.url) {

@@ -1,10 +1,14 @@
+//app/login/page.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth(); // 👈 folosim AuthContext
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -16,38 +20,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          identifier, // poate fi email sau username
-          password,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier, password }),
+        }
+      );
 
       const data = await res.json();
       console.log("🔐 Strapi login response:", data);
-
-    if (data.jwt) {
-  localStorage.setItem("jwt", data.jwt);
-  localStorage.setItem("user", JSON.stringify(data.user));
-
-    // 👇 notifică Navbar-ul să se reîncarce
-  window.dispatchEvent(new Event("userLogin"));
-
-  router.push("/profile"); // redirecționează la profil
-}
-
 
       if (!res.ok) {
         throw new Error(data.error?.message || "Login failed");
       }
 
-      // ✅ Salvăm JWT și datele utilizatorului în localStorage
-      localStorage.setItem("jwt", data.jwt);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // 🔥 Înregistrăm user-ul în AuthContext (+ localStorage automat)
+      login(data.user, data.jwt);
 
-      // ✅ Redirecționează către profil sau homepage
+      // 🚀 Redirect la profil
       router.push("/profile");
     } catch (err: any) {
       setError(err.message);
