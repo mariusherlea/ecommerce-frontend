@@ -1,23 +1,34 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
 
+  const {user} = useAuth();
+
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const res = await fetch("/api/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+     body: JSON.stringify({
       cart,
-      user, // trimitem datele utilizatorului
-    }),
-  });
+      customer: user
+          ? {
+              id: user.id,
+              fullName: user.username,          // sau user.fullName dacă ai câmp separat
+              email: user.email,
+              phone: user.phone,                // dacă ai salvat telefonul în profil
+              address: user.shippingAddress,    // dacă ai salvat adresa
+              stripeCustomerId: user.stripeCustomerId, // opțional
+            }
+          : undefined,
+      }),
+    });
 
     const data = await res.json();
     if (data.url) {

@@ -30,6 +30,9 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fullName, setFullName] = useState("");
+const [phone, setPhone] = useState("");
+const [shipping, setShipping] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -79,6 +82,41 @@ export default function ProfilePage() {
     router.push("/login");
   };
 
+  
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("jwt");
+  if (!token || !user) return;
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/${user.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        fullName,
+        phone,
+        shippingAddress: shipping,
+      }),
+    }
+  );
+
+  if (res.ok) {
+    const updatedUser = await res.json();
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    alert("Date actualizate cu succes!");
+  } else {
+    alert("Eroare la actualizare");
+  }
+};
+
+
   if (loading) return <p className="p-6">Se încarcă datele...</p>;
 
   if (error)
@@ -106,6 +144,50 @@ export default function ProfilePage() {
         <p><strong>Nume utilizator:</strong> {user.username}</p>
         <p><strong>Email:</strong> {user.email}</p>
       </div>
+
+{/* 🔧 Formular date personale */}
+<div className="bg-white shadow rounded-lg p-6 space-y-4">
+  <h2 className="text-xl font-semibold">📄 Date personale</h2>
+
+  <form
+    onSubmit={handleUpdateProfile}
+    className="space-y-3"
+  >
+    <div>
+      <label className="block text-sm font-medium">Nume complet</label>
+      <input
+        type="text"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+        className="w-full border p-2 rounded"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium">Telefon</label>
+      <input
+        type="text"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        className="w-full border p-2 rounded"
+      />
+    </div>
+
+    <div>
+      <label className="block text-sm font-medium">Adresă livrare</label>
+      <textarea
+        value={shipping}
+        onChange={(e) => setShipping(e.target.value)}
+        className="w-full border p-2 rounded"
+      />
+    </div>
+
+    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      Salvează modificările
+    </button>
+  </form>
+</div>
+
 
       <div>
         <h2 className="text-xl font-semibold mb-4">🧾 Istoric comenzi</h2>

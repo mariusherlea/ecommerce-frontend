@@ -7,6 +7,10 @@ type User = {
   id: number;
   username: string;
   email: string;
+  fullName?: string | null;
+  phone?: string | null;
+  shippingAddress?: string | null;
+   stripeCustomerId?: string;
 };
 
 type AuthContextType = {

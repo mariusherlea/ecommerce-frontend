@@ -35,7 +35,7 @@ export default function LoginPage() {
       if (!res.ok) {
         throw new Error(data.error?.message || "Login failed");
       }
-
+localStorage.setItem("user", JSON.stringify(data.user));
       // 🔥 Înregistrăm user-ul în AuthContext (+ localStorage automat)
       login(data.user, data.jwt);
 
