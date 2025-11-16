@@ -1,0 +1,41 @@
+{
+  // Formatare cu Prettier
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.printWidth": 80,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "all",
+
+  // TypeScript & JavaScript
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // ESLint
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.format.enable": true,
+
+  // Tailwind CSS IntelliSense
+  "tailwindCSS.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+
+  // React
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  // Autocomplete & importuri
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "files.associations": {
+    "*.env.local": "dotenv",
+    "*.env": "dotenv"
+  },
+
+  // UX / vizibilitate
+  "editor.minimap.enabled": false,
+  "editor.wordWrap": "on",
+  "editor.tabSize": 2,
+
+  // Error Lens
+  "errorLens.enabled": true,
+  "errorLens.fontWeight": "600"
+}

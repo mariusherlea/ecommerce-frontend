@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "mikestead.dotenv",
+    "christian-kohler.path-intellisense",
+    "eamodio.gitlens",
+    "formulahendry.auto-rename-tag",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "styled-components.vscode-styled-components",
+    "usernamehw.errorlens",
+    "aaron-bond.better-comments",
+    "gruntfuggly.todo-tree"
+  ],
+  "unwantedRecommendations": []
+}
