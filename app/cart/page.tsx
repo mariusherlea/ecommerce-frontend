@@ -1,40 +1,41 @@
-"use client";
+//app/cart/page.tsx
+'use client';
 
-import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/context/CartContext";
+import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 
 export default function CartPage() {
-  const { cart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity } = useCart();
-
-  const {user} = useAuth();
+  const { user } = useAuth();
+  const {
+    cart,
+    removeFromCart,
+    clearCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useCart();
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
-
-  const res = await fetch("/api/checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-     body: JSON.stringify({
-      cart,
-      customer: user
-          ? {
-              id: user.id,
-              fullName: user.username,          // sau user.fullName dacă ai câmp separat
-              email: user.email,
-              phone: user.phone,                // dacă ai salvat telefonul în profil
-              address: user.shippingAddress,    // dacă ai salvat adresa
-              stripeCustomerId: user.stripeCustomerId, // opțional
-            }
-          : undefined,
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cart,
+        customer: {
+          id: user?.id,
+          name: user?.fullName ?? '',
+          email: user?.email ?? '',
+          phone: user?.phone ?? '',
+          address: user?.shippingAddress ?? '', // ← CORECT
+        },
       }),
     });
 
     const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url; // redirect către Stripe
-    }
+    if (data.url) window.location.href = data.url;
   };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Coșul tău</h1>
@@ -45,7 +46,10 @@ export default function CartPage() {
         <>
           <ul className="space-y-4">
             {cart.map((item) => (
-              <li key={item.id} className="border p-4 rounded shadow flex justify-between items-center">
+              <li
+                key={item.id}
+                className="border p-4 rounded shadow flex justify-between items-center"
+              >
                 <div>
                   <h2 className="text-lg font-semibold">{item.title}</h2>
                   <p>Preț: {item.price} lei</p>
@@ -87,15 +91,13 @@ export default function CartPage() {
             >
               Golește coșul
             </button>
-            <div className="text-xl font-bold">
-              Total general: {total} lei
-            </div>
+            <div className="text-xl font-bold">Total general: {total} lei</div>
             <button
-            onClick={handleCheckout}
-            className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          >
-            Plătește acum
-          </button>
+              onClick={handleCheckout}
+              className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            >
+              Plătește acum
+            </button>
           </div>
         </>
       )}

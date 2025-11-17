@@ -1,7 +1,13 @@
 //context/AuthContext.tsx
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 
 type User = {
   id: number;
@@ -9,8 +15,8 @@ type User = {
   email: string;
   fullName?: string | null;
   phone?: string | null;
-  shippingAddress?: string | null;
-   stripeCustomerId?: string;
+  address?: string | null; // ✔ ADRESA OFICIALĂ
+  stripeCustomerId?: string | null; // ✔ dacă îl vei salva cândva
 };
 
 type AuthContextType = {
@@ -28,10 +34,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [jwt, setJwt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Load session from localStorage
+  // 🔹 Încarcă sesiunea la pornire
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    const savedJwt = localStorage.getItem("jwt");
+    const savedUser = localStorage.getItem('user');
+    const savedJwt = localStorage.getItem('jwt');
 
     if (savedUser && savedJwt) {
       setUser(JSON.parse(savedUser));
@@ -41,17 +47,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
+  // 🔹 Salvare user + jwt la login
   const login = (userData: User, token: string) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("jwt", token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('jwt', token);
 
     setUser(userData);
     setJwt(token);
   };
 
+  // 🔹 Ștergere sesiune la logout
   const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("jwt");
+    localStorage.removeItem('user');
+    localStorage.removeItem('jwt');
 
     setUser(null);
     setJwt(null);
@@ -66,6 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
   return ctx;
 }

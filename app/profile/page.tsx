@@ -1,14 +1,8 @@
-//app/profile/page.tsx
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
-type User = {
-  id: number;
-  username: string;
-  email: string;
-};
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 type OrderItem = {
   name: string;
@@ -26,44 +20,56 @@ type Order = {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, jwt, logout, login } = useAuth();
+
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [fullName, setFullName] = useState("");
-const [phone, setPhone] = useState("");
-const [shipping, setShipping] = useState("");
 
+  // Form state
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+
+  // Dacă user nu e logat → redirect
   useEffect(() => {
-    const token = localStorage.getItem("jwt");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+    if (!jwt) router.push('/login');
+  }, [jwt, router]);
 
-    async function fetchUserAndOrders() {
+  // Precompletare formular + încărcare comenzi
+  useEffect(() => {
+    if (!jwt) return;
+
+    const fetchUserAndOrders = async () => {
       try {
-        // 🧠 Preluăm datele utilizatorului
+        // Preluăm utilizatorul
         const userRes = await fetch(
           `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me`,
           {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+            headers: { Authorization: `Bearer ${jwt}` },
+          },
         );
 
-        if (!userRes.ok) throw new Error("Eroare la preluarea datelor utilizatorului");
+        if (!userRes.ok) throw new Error('Eroare la preluarea utilizatorului');
         const userData = await userRes.json();
-        setUser(userData);
 
-        // 📦 Preluăm comenzile sale
+        // Update local & AuthContext
+        setFullName(userData.fullName || '');
+        setPhone(userData.phone || '');
+        setAddress(userData.address || '');
+
+        login(userData, jwt); // ✔ menține Auth sincronizat
+
+        // Preluăm comenzile userului
         const ordersRes = await fetch(
-  `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders?populate=items&filters[email][$eq]=${userData.email}`,
-  {
-    headers: { Authorization: `Bearer ${token}` }, // 👈 JWT, nu STRAPI_API_TOKEN
-  }
-);
+          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders?populate=items&filters[email][$eq]=${userData.email}`,
+          {
+            headers: { Authorization: `Bearer ${jwt}` },
+          },
+        );
 
-        if (!ordersRes.ok) throw new Error("Eroare la preluarea comenzilor");
+        if (!ordersRes.ok) throw new Error('Eroare la preluarea comenzilor');
+
         const ordersData = await ordersRes.json();
         setOrders(ordersData.data);
       } catch (err: any) {
@@ -71,126 +77,101 @@ const [shipping, setShipping] = useState("");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchUserAndOrders();
-  }, [router]);
+  }, [jwt, login]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("jwt");
-    localStorage.removeItem("user");
-    router.push("/login");
+  // 🟢 Salvare date în Strapi
+  const handleSaveProfile = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${jwt}`,
+          },
+          body: JSON.stringify({
+            fullName,
+            phone,
+            address,
+          }),
+        },
+      );
+
+      if (!res.ok) throw new Error('Eroare la actualizarea datelor');
+
+      const updatedUser = await res.json();
+
+      // actualizezi contextul
+      login(updatedUser, jwt);
+
+      alert('✔ Date actualizate cu succes!');
+    } catch (err: any) {
+      alert('❌ Eroare la actualizare');
+    }
   };
 
-  
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const token = localStorage.getItem("jwt");
-  if (!token || !user) return;
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/${user.id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        fullName,
-        phone,
-        shippingAddress: shipping,
-      }),
-    }
-  );
-
-  if (res.ok) {
-    const updatedUser = await res.json();
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
-    alert("Date actualizate cu succes!");
-  } else {
-    alert("Eroare la actualizare");
-  }
-};
-
-
+  if (!user) return null;
   if (loading) return <p className="p-6">Se încarcă datele...</p>;
 
-  if (error)
-    return (
-      <div className="p-6 text-red-600">
-        <p>⚠️ {error}</p>
-      </div>
-    );
-
-  if (!user) return null;
-
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-8">
+    <div className="p-6 max-w-4xl mx-auto space-y-10">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">👤 Profilul tău</h1>
         <button
-          onClick={handleLogout}
+          onClick={logout}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
         >
           Deconectare
         </button>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-6">
-        <p><strong>Nume utilizator:</strong> {user.username}</p>
-        <p><strong>Email:</strong> {user.email}</p>
+      {/* 🟢 Formul DATE PERSONALE */}
+      <div className="bg-white shadow rounded-lg p-6 space-y-4">
+        <h2 className="text-xl font-semibold">📄 Date personale</h2>
+
+        <div className="space-y-2">
+          <label>Nume complet</label>
+          <input
+            className="w-full border p-2 rounded"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label>Telefon</label>
+          <input
+            className="w-full border p-2 rounded"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label>Adresa de livrare</label>
+          <input
+            className="w-full border p-2 rounded"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+        </div>
+
+        <button
+          onClick={handleSaveProfile}
+          className="w-full bg-blue-600 text-white py-2 mt-4 rounded hover:bg-blue-700"
+        >
+          Salvează modificările
+        </button>
       </div>
 
-{/* 🔧 Formular date personale */}
-<div className="bg-white shadow rounded-lg p-6 space-y-4">
-  <h2 className="text-xl font-semibold">📄 Date personale</h2>
-
-  <form
-    onSubmit={handleUpdateProfile}
-    className="space-y-3"
-  >
-    <div>
-      <label className="block text-sm font-medium">Nume complet</label>
-      <input
-        type="text"
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
-        className="w-full border p-2 rounded"
-      />
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium">Telefon</label>
-      <input
-        type="text"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="w-full border p-2 rounded"
-      />
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium">Adresă livrare</label>
-      <textarea
-        value={shipping}
-        onChange={(e) => setShipping(e.target.value)}
-        className="w-full border p-2 rounded"
-      />
-    </div>
-
-    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-      Salvează modificările
-    </button>
-  </form>
-</div>
-
-
+      {/* 🟢 Istoric comenzi */}
       <div>
         <h2 className="text-xl font-semibold mb-4">🧾 Istoric comenzi</h2>
+
         {orders.length === 0 ? (
           <p>Nu ai nicio comandă momentan.</p>
         ) : (
@@ -198,27 +179,16 @@ const [shipping, setShipping] = useState("");
             {orders.map((order) => (
               <div
                 key={order.id}
-                className="border rounded-lg p-4 bg-white shadow hover:shadow-md transition"
+                className="border rounded-lg p-4 bg-white shadow"
               >
                 <p className="text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleString()}
                 </p>
                 <h3 className="font-semibold">Comanda #{order.id}</h3>
                 <p>Total: {order.total} lei</p>
-                <p>
-                  Status:{" "}
-                  <span
-                    className={`font-semibold ${
-                      order.stare === "paid"
-                        ? "text-green-600"
-                        : "text-yellow-600"
-                    }`}
-                  >
-                    {order.stare}
-                  </span>
-                </p>
+                <p>Status: {order.stare}</p>
 
-                <ul className="mt-2 text-sm text-gray-700">
+                <ul className="mt-2 text-sm">
                   {order.items.map((item, i) => (
                     <li key={i}>
                       {item.name} — {item.quantity} × {item.price} lei
