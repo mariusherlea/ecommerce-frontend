@@ -1,7 +1,8 @@
-"use client";
+//app/products/page.tsx
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 type Product = {
   id: number;
@@ -19,7 +20,7 @@ type PaginationMeta = {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationMeta>({
     page: 1,
@@ -29,29 +30,27 @@ export default function ProductsPage() {
   });
 
   // fetch produse din Strapi cu search + paginare
-  async function fetchProducts(query: string = "", page: number = 1) {
+  async function fetchProducts(query: string = '', page: number = 1) {
     setLoading(true);
     try {
-      const url = new URL(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/products`
-      );
+      const url = new URL(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/products`);
 
       // search
       if (query) {
-        url.searchParams.append("filters[title][$containsi]", query);
+        url.searchParams.append('filters[title][$containsi]', query);
       }
 
       // pagination
-      url.searchParams.append("pagination[page]", page.toString());
-      url.searchParams.append("pagination[pageSize]", "6");
+      url.searchParams.append('pagination[page]', page.toString());
+      url.searchParams.append('pagination[pageSize]', '6');
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      const res = await fetch(url.toString(), { cache: 'no-store' });
       const data = await res.json();
 
       setProducts(data.data);
       setPagination(data.meta.pagination);
     } catch (error) {
-      console.error("Eroare la fetch produse:", error);
+      console.error('Eroare la fetch produse:', error);
     } finally {
       setLoading(false);
     }
@@ -59,7 +58,7 @@ export default function ProductsPage() {
 
   // inițial → prima pagină
   useEffect(() => {
-    fetchProducts("", 1);
+    fetchProducts('', 1);
   }, []);
 
   // când tastezi → reset la pagina 1
