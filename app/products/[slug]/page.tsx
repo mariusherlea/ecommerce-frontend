@@ -1,5 +1,5 @@
 //app/products/[slug]/page.tsx
-import ProductDetails from "./ProductDetails";
+import ProductDetails from './ProductDetails';
 
 type Product = {
   id: number;
@@ -15,20 +15,31 @@ type Product = {
 };
 
 async function getProduct(slug: string): Promise<Product | null> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/products?filters[slug][$eq]=${slug}`,
-    { cache: "no-store" }
-  );
+  const base = process.env.NEXT_PUBLIC_STRAPI_URL;
+  if (!base) throw new Error('NEXT_PUBLIC_STRAPI_URL is missing');
 
-  if (!res.ok) return null;
+  const qs = new URLSearchParams({
+    'filters[slug][$eq]': slug,
+    populate: '*',
+  });
 
-  const data = await res.json();
-  console.log("Strapi response:", data);
+  const url = `${base}/api/products?${qs.toString()}`;
+  console.log('Fetching:', url);
 
-  return data.data.length > 0 ? data.data[0] : null;
+  try {
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) {
+      console.log('Strapi status:', res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    return data?.data?.length ? data.data[0] : null;
+  } catch (err) {
+    console.error('Fetch error:', err);
+    throw err; // ca să vezi cauza reală în terminal
+  }
 }
-
-
 
 export default async function ProductPage(props: {
   params: Promise<{ slug: string }>;
@@ -37,5 +48,5 @@ export default async function ProductPage(props: {
 
   const product = await getProduct(slug);
   if (!product) return <p className="p-6">Produsul nu a fost găsit.</p>;
-return <ProductDetails product={product} />;
+  return <ProductDetails product={product} />;
 }
