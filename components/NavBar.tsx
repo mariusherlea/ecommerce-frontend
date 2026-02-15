@@ -10,7 +10,7 @@ export default function Navbar() {
   const { cart } = useCart();
 
   return (
-    <nav className="flex justify-between p-4 shadow bg-red-500">
+    <nav className="flex justify-between p-4 shadow bg-blue-500">
       <Link href="/">Home</Link>
 
       <div className="flex items-center gap-4">
