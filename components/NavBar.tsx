@@ -1,16 +1,16 @@
 //components/NavBar.tsx
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
-import { useCart } from "@/context/CartContext";
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { cart } = useCart();
 
   return (
-    <nav className="flex justify-between p-4 shadow bg-white">
+    <nav className="flex justify-between p-4 shadow bg-red-500">
       <Link href="/">Home</Link>
 
       <div className="flex items-center gap-4">
@@ -18,7 +18,7 @@ export default function Navbar() {
         <Link href="/cart" className="relative">
           Coș
           {cart.length > 0 && (
-            <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+            <span className="absolute -top-2 -right-3 bg-red-500 text-yellow-600 text-xs px-2 py-1 rounded-full">
               {cart.length}
             </span>
           )}
@@ -32,7 +32,7 @@ export default function Navbar() {
             </Link>
             <button
               onClick={logout}
-              className="bg-red-400 text-white px-3 py-1 rounded"
+              className="bg-red-400 text-green-600 px-3 py-1 rounded"
             >
               Delogare
             </button>
@@ -40,7 +40,7 @@ export default function Navbar() {
         ) : (
           <Link
             href="/login"
-            className="bg-blue-500 text-white px-3 py-1 rounded"
+            className="bg-blue-500 text-green-600 px-3 py-1 rounded"
           >
             Autentificare
           </Link>
