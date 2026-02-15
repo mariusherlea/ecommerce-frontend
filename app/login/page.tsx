@@ -1,16 +1,16 @@
 //app/login/page.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth(); // 👈 folosim AuthContext
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -23,24 +23,24 @@ export default function LoginPage() {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ identifier, password }),
-        }
+        },
       );
 
       const data = await res.json();
-      console.log("🔐 Strapi login response:", data);
+      console.log('🔐 Strapi login response:', data);
 
       if (!res.ok) {
-        throw new Error(data.error?.message || "Login failed");
+        throw new Error(data.error?.message || 'Login failed');
       }
-localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem('user', JSON.stringify(data.user));
       // 🔥 Înregistrăm user-ul în AuthContext (+ localStorage automat)
       login(data.user, data.jwt);
 
       // 🚀 Redirect la profil
-      router.push("/profile");
+      router.push('/profile');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -81,11 +81,11 @@ localStorage.setItem("user", JSON.stringify(data.user));
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
         >
-          {loading ? "Se autentifică..." : "Autentifică-te"}
+          {loading ? 'Se autentifică...' : 'Autentifică-te'}
         </button>
 
         <p className="text-sm text-center text-gray-600">
-          Nu ai cont?{" "}
+          Nu ai cont?{' '}
           <a href="/register" className="text-blue-600 hover:underline">
             Înregistrează-te
           </a>

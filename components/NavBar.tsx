@@ -32,7 +32,7 @@ export default function Navbar() {
             </Link>
             <button
               onClick={logout}
-              className="bg-red-400 text-green-600 px-3 py-1 rounded"
+              className="bg-red-400 text-white px-3 py-1 rounded"
             >
               Delogare
             </button>
@@ -40,7 +40,7 @@ export default function Navbar() {
         ) : (
           <Link
             href="/login"
-            className="bg-blue-500 text-green-600 px-3 py-1 rounded"
+            className="bg-blue-500 text-white px-3 py-1 rounded"
           >
             Autentificare
           </Link>
