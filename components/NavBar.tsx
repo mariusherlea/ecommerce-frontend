@@ -18,7 +18,7 @@ export default function Navbar() {
         <Link href="/cart" className="relative">
           Coș
           {cart.length > 0 && (
-            <span className="absolute -top-2 -right-3 bg-red-500 text-yellow-600 text-xs px-2 py-1 rounded-full">
+            <span className="absolute -top-2 -right-3 bg-green-500 text-red-600 text-xs px-2 py-1 rounded-full">
               {cart.length}
             </span>
           )}
