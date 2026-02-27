@@ -2,6 +2,8 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
+export const runtime = 'nodejs';
+
 function getStripe() {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY is missing');
@@ -26,7 +28,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
     if (!baseUrl) {
       throw new Error('NEXT_PUBLIC_APP_URL is missing');
     }
@@ -46,7 +48,7 @@ export async function POST(req: Request) {
         quantity: Number(item.quantity ?? 1),
       })),
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/cancel`,
+      cancel_url: `${baseUrl}/cart`,
       // (opțional) poți trimite customer info în metadata
       metadata: {
         customerEmail: body?.customer?.email ?? '',

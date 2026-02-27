@@ -1,12 +1,12 @@
-//app/api/webhook/route.ts
+// app/api/webhook/route.ts
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-function getStripe() {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error('STRIPE_SECRET_KEY is missing');
-  }
+export const runtime = 'nodejs';
 
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY)
+    throw new Error('STRIPE_SECRET_KEY is missing');
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
@@ -14,19 +14,21 @@ export async function POST(req: Request) {
   const stripe = getStripe();
 
   const signature = req.headers.get('stripe-signature');
-  if (!signature) {
+  if (!signature)
     return new NextResponse('Missing Stripe signature', { status: 400 });
-  }
 
   const body = await req.text();
 
-  let event: Stripe.Event;
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    return new NextResponse('Missing STRIPE_WEBHOOK_SECRET', { status: 500 });
+  }
 
+  let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!,
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     console.error('⚠️ Webhook signature verification failed.', err);
@@ -37,6 +39,11 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     try {
+      if (!process.env.STRAPI_API_URL)
+        throw new Error('STRAPI_API_URL missing');
+      if (!process.env.STRAPI_API_TOKEN)
+        throw new Error('STRAPI_API_TOKEN missing');
+
       const lineItems = await stripe.checkout.sessions.listLineItems(
         session.id,
       );
@@ -46,7 +53,7 @@ export async function POST(req: Request) {
         ? `${address.line1 ?? ''}, ${address.city ?? ''}, ${address.postal_code ?? ''}, ${address.country ?? ''}`
         : null;
 
-      await fetch(`${process.env.STRAPI_API_URL}/api/orders`, {
+      const res = await fetch(`${process.env.STRAPI_API_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,11 +72,16 @@ export async function POST(req: Request) {
               quantity: item.quantity ?? 0,
               price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
             })),
+            // dacă ai Draft&Publish activ:
+            // publishedAt: new Date().toISOString(),
           },
         }),
       });
 
-      console.log('✅ Order saved in Strapi');
+      const text = await res.text();
+      if (!res.ok)
+        console.error('❌ Strapi create order failed:', res.status, text);
+      else console.log('✅ Order saved in Strapi:', text);
     } catch (error) {
       console.error('❌ Failed to save order:', error);
     }
