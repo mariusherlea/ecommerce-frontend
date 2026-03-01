@@ -3,6 +3,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/formatPrice';
 
 export default function CartPage() {
   const { user } = useAuth();
@@ -52,7 +53,7 @@ export default function CartPage() {
               >
                 <div>
                   <h2 className="text-lg font-semibold">{item.title}</h2>
-                  <p>Preț: {item.price} lei</p>
+                  <p>Preț: {formatPrice(item.price)}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() => decreaseQuantity(item.id)}
@@ -71,7 +72,7 @@ export default function CartPage() {
                 </div>
                 <div className="text-right">
                   <p className="font-semibold">
-                    Total: {item.price * item.quantity} lei
+                    Total: {formatPrice(item.price * item.quantity)}
                   </p>
                   <button
                     onClick={() => removeFromCart(item.id)}
@@ -91,7 +92,9 @@ export default function CartPage() {
             >
               Golește coșul
             </button>
-            <div className="text-xl font-bold">Total general: {total} lei</div>
+            <div className="text-xl font-bold">
+              <p>Total general:{formatPrice(total)}</p>{' '}
+            </div>
             <button
               onClick={handleCheckout}
               className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"

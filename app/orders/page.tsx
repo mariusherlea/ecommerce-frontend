@@ -1,8 +1,9 @@
 //app/orders/page.tsx
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { formatPrice } from '@/lib/formatPrice';
 
 type OrderItem = {
   name: string;
@@ -32,11 +33,11 @@ export default function OrdersPage() {
 
   // ✅ totul într-un singur useEffect
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
+    const token = localStorage.getItem('admin_token');
 
     // dacă tokenul e invalid → redirect
     if (token !== process.env.NEXT_PUBLIC_ADMIN_ACCESS_KEY) {
-      router.push("/");
+      router.push('/');
       return;
     }
 
@@ -59,7 +60,7 @@ export default function OrdersPage() {
         const data = await res.json();
         setOrders(data.data || []);
       } catch (err: any) {
-        console.error("❌ Eroare fetchOrders:", err);
+        console.error('❌ Eroare fetchOrders:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -86,23 +87,24 @@ export default function OrdersPage() {
 
   const StatusBadge = ({ status }: { status: string }) => {
     const colorMap: Record<string, string> = {
-      paid: "bg-green-100 text-green-700 border-green-300",
-      pending: "bg-yellow-100 text-yellow-700 border-yellow-300",
-      failed: "bg-red-100 text-red-700 border-red-300",
+      paid: 'bg-green-100 text-green-700 border-green-300',
+      pending: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      failed: 'bg-red-100 text-red-700 border-red-300',
     };
-    const color = colorMap[status] || "bg-gray-100 text-gray-700 border-gray-300";
+    const color =
+      colorMap[status] || 'bg-gray-100 text-gray-700 border-gray-300';
 
     return (
       <span
         className={`px-3 py-1 text-sm font-semibold border rounded-full ${color}`}
       >
-        {status === "paid"
-          ? "✅ Paid"
-          : status === "pending"
-          ? "⌛ Pending"
-          : status === "failed"
-          ? "❌ Failed"
-          : status}
+        {status === 'paid'
+          ? '✅ Paid'
+          : status === 'pending'
+            ? '⌛ Pending'
+            : status === 'failed'
+              ? '❌ Failed'
+              : status}
       </span>
     );
   };
@@ -127,7 +129,8 @@ export default function OrdersPage() {
               {new Date(order.createdAt).toLocaleString()}
             </p>
             <p className="text-gray-600 font-medium">
-              Total: <span className="font-semibold">{order.total} lei</span>
+              Total:{' '}
+              <span className="font-semibold">{formatPrice(order.total)}</span>
             </p>
           </div>
         ))}
@@ -149,15 +152,16 @@ export default function OrdersPage() {
 
             <div className="space-y-2 text-sm text-gray-700 mb-4">
               <p>
-                <strong>Email client:</strong>{" "}
-                {selectedOrder.email || "nespecificat"}
+                <strong>Email client:</strong>{' '}
+                {selectedOrder.email || 'nespecificat'}
               </p>
               <p>
-                <strong>Data comenzii:</strong>{" "}
+                <strong>Data comenzii:</strong>{' '}
                 {new Date(selectedOrder.createdAt).toLocaleString()}
               </p>
               <p className="flex items-center gap-2">
-                <strong>Status:</strong> <StatusBadge status={selectedOrder.stare} />
+                <strong>Status:</strong>{' '}
+                <StatusBadge status={selectedOrder.stare} />
               </p>
             </div>
 
@@ -170,8 +174,8 @@ export default function OrdersPage() {
                   <li key={idx} className="py-2 flex justify-between text-sm">
                     <span>{item.name}</span>
                     <span className="text-gray-600">
-                      {item.quantity} × {item.price} lei ={" "}
-                      <strong>{item.quantity * item.price} lei</strong>
+                      {item.quantity} × {formatPrice(item.price)} ={' '}
+                      <strong>{formatPrice(item.quantity * item.price)}</strong>
                     </span>
                   </li>
                 ))}
@@ -179,7 +183,7 @@ export default function OrdersPage() {
             </div>
 
             <div className="mt-4 border-t pt-3 text-right font-semibold text-gray-800">
-              Total: {selectedOrder.total} lei
+              Total: {formatPrice(selectedOrder.total)}
             </div>
           </div>
         </div>

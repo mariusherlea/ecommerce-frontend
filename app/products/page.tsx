@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { formatPrice } from '@/lib/formatPrice';
 
 type Product = {
   id: number;
@@ -100,7 +101,7 @@ export default function ProductsPage() {
               className="border p-4 rounded shadow hover:shadow-lg transition"
             >
               <h2 className="text-xl font-semibold">{product.title}</h2>
-              <p className="text-gray-600">{product.price} lei</p>
+              <p className="text-gray-600">{formatPrice(product.price)}</p>
               <Link
                 href={`/products/${product.slug}`}
                 className="text-blue-600 hover:underline block mt-2"

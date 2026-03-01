@@ -1,7 +1,7 @@
+'use client';
 
-"use client";
-
-import { useCart } from "@/context/CartContext";
+import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/formatPrice';
 
 type Product = {
   id: number;
@@ -19,7 +19,7 @@ export default function ProductDetails({ product }: { product: Product }) {
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold">{product.title}</h1>
-      <p className="text-gray-600 mt-4">{product.price} lei</p>
+      <p className="text-gray-600 mt-4">{formatPrice(product.price)}</p>
       <p className="mt-4">În stoc: {product.inStock}</p>
 
       <button

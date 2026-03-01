@@ -1,8 +1,9 @@
 // app/products/ProductsClient.tsx
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState } from 'react';
+import Link from 'next/link';
+import { formatPrice } from '@/lib/formatPrice';
 
 type Product = {
   id: number;
@@ -13,7 +14,7 @@ type Product = {
 };
 
 export default function ProductsClient({ products }: { products: Product[] }) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   if (products.length === 0) {
     return <p className="p-6">Nu există produse disponibile.</p>;
@@ -21,7 +22,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
 
   // 🔎 filtrare produse după titlu
   const filtered = products.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase())
+    p.title.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -47,7 +48,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
               className="border p-4 rounded shadow hover:shadow-lg transition"
             >
               <h2 className="text-xl font-semibold">{product.title}</h2>
-              <p className="text-gray-600">{product.price} lei</p>
+              <p className="text-gray-600">{formatPrice(product.price)}</p>
               <Link
                 href={`/products/${product.slug}`}
                 className="text-blue-600 hover:underline block mt-2"

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { formatPrice } from '@/lib/formatPrice';
 
 type OrderItem = {
   name: string;
@@ -185,13 +186,13 @@ export default function ProfilePage() {
                   {new Date(order.createdAt).toLocaleString()}
                 </p>
                 <h3 className="font-semibold">Comanda #{order.id}</h3>
-                <p>Total: {order.total} lei</p>
+                <p>Total: {formatPrice(order.total)}</p>
                 <p>Status: {order.stare}</p>
 
                 <ul className="mt-2 text-sm">
                   {order.items.map((item, i) => (
                     <li key={i}>
-                      {item.name} — {item.quantity} × {item.price} lei
+                      {item.name} — {item.quantity} × {formatPrice(item.price)}
                     </li>
                   ))}
                 </ul>
