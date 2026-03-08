@@ -32,7 +32,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
       {/* search box */}
       <input
         type="text"
-        placeholder="Caută produse..."
+        placeholder="Search items..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="w-full p-2 border rounded mb-6"
