@@ -17,7 +17,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
   const [search, setSearch] = useState('');
 
   if (products.length === 0) {
-    return <p className="p-6">Nu există produse disponibile.</p>;
+    return <p className="p-6">No item available.</p>;
   }
 
   // 🔎 filtrare produse după titlu
@@ -27,7 +27,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Produse</h1>
+      <h1 className="text-3xl font-bold mb-6">Item</h1>
 
       {/* search box */}
       <input
@@ -39,7 +39,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
       />
 
       {filtered.length === 0 ? (
-        <p className="text-gray-500">Niciun produs găsit.</p>
+        <p className="text-gray-500">Item not found</p>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filtered.map((product) => (
@@ -53,7 +53,7 @@ export default function ProductsClient({ products }: { products: Product[] }) {
                 href={`/products/${product.slug}`}
                 className="text-blue-600 hover:underline block mt-2"
               >
-                Vezi detalii →
+                See details →
               </Link>
             </li>
           ))}

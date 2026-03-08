@@ -72,18 +72,18 @@ export default function OrdersPage() {
 
   if (!authorized) return null;
 
-  if (loading) return <p className="p-6">Se încarcă comenzile...</p>;
+  if (loading) return <p className="p-6">Orders are loading...</p>;
 
   if (error)
     return (
       <div className="p-6 text-red-600">
-        <p>⚠️ A apărut o eroare:</p>
+        <p>⚠️ It is an error:</p>
         <p className="mt-2 font-mono">{error}</p>
       </div>
     );
 
   if (orders.length === 0)
-    return <p className="p-6">Nu există comenzi înregistrate.</p>;
+    return <p className="p-6">There are no order registered.</p>;
 
   const StatusBadge = ({ status }: { status: string }) => {
     const colorMap: Record<string, string> = {
@@ -111,17 +111,17 @@ export default function OrdersPage() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">🧾 Comenzile tale</h1>
+      <h1 className="text-2xl font-bold mb-6">🧾 Your order</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {orders.map((order) => (
           <div
             key={order.id}
             onClick={() => setSelectedOrder(order)}
-            className="border p-5 rounded-xl shadow-sm hover:shadow-md cursor-pointer transition bg-white"
+            className="border p-5 rounded-xl shadow-sm hover:shadow-md cursor-pointer transition bg-black"
           >
             <div className="flex justify-between items-center mb-3">
-              <h2 className="text-lg font-semibold">Comanda #{order.id}</h2>
+              <h2 className="text-lg font-semibold">Order #{order.id}</h2>
               <StatusBadge status={order.stare} />
             </div>
 
@@ -138,7 +138,7 @@ export default function OrdersPage() {
 
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg relative">
+          <div className="bg-black p-6 rounded-lg w-full max-w-lg shadow-lg relative">
             <button
               onClick={() => setSelectedOrder(null)}
               className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"
@@ -147,16 +147,16 @@ export default function OrdersPage() {
             </button>
 
             <h2 className="text-xl font-bold mb-4">
-              Detalii Comandă #{selectedOrder.id}
+              Order details #{selectedOrder.id}
             </h2>
 
             <div className="space-y-2 text-sm text-gray-700 mb-4">
               <p>
-                <strong>Email client:</strong>{' '}
+                <strong>Customer email:</strong>{' '}
                 {selectedOrder.email || 'nespecificat'}
               </p>
               <p>
-                <strong>Data comenzii:</strong>{' '}
+                <strong>Order date:</strong>{' '}
                 {new Date(selectedOrder.createdAt).toLocaleString()}
               </p>
               <p className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export default function OrdersPage() {
 
             <div>
               <h3 className="font-semibold mb-2 text-gray-800 border-b pb-1">
-                Produse comandate
+                Item ordered
               </h3>
               <ul className="divide-y divide-gray-200">
                 {selectedOrder.items.map((item, idx) => (

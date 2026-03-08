@@ -82,10 +82,10 @@ export default function SuccessClient() {
           <div className="text-3xl">✅</div>
           <div>
             <h1 className="text-2xl font-bold text-green-500">
-              Plata a fost efectuată cu succes!
+              Paymet was succesfull!
             </h1>
             <p className="text-gray-300 mt-1">
-              Comanda ta a fost procesată și va fi livrată în curând.
+              Your order has benn processed and soon will be delivered
             </p>
           </div>
         </div>
@@ -99,26 +99,23 @@ export default function SuccessClient() {
 
         <div className="mt-4">
           {loading && (
-            <p className="text-gray-300">Se încarcă detaliile comenzii…</p>
+            <p className="text-gray-300">Order details are loading...</p>
           )}
 
           {!loading && error && (
-            <p className="text-red-400">Nu am putut încărca comanda: {error}</p>
+            <p className="text-red-400">Unable to load order: {error}</p>
           )}
 
           {!loading && !error && order === null && (
             <p className="text-gray-300">
-              Comanda a fost înregistrată. Dacă nu apare încă, reîncearcă peste
-              câteva secunde.
+              Order was register. If it is not there yet, try on a few seconds.
             </p>
           )}
 
           {!loading && !error && order && (
             <div className="mt-4 rounded-xl border border-white/10 p-4">
               <div className="flex items-center justify-between">
-                <p className="text-gray-200 font-semibold">
-                  Comanda #{order.id}
-                </p>
+                <p className="text-gray-200 font-semibold">Order #{order.id}</p>
                 <span className="text-xs rounded-full px-3 py-1 bg-green-500/15 text-green-400 border border-green-500/20">
                   {order.stare ?? 'paid'}
                 </span>
@@ -158,13 +155,13 @@ export default function SuccessClient() {
             href="/products"
             className="flex-1 text-center bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 transition"
           >
-            🛍️ Continuă cumpărăturile
+            🛍️ Continue shopping
           </Link>
           <Link
             href="/"
-            className="flex-1 text-center bg-white/10 text-white px-4 py-3 rounded-xl hover:bg-white/15 transition"
+            className="flex-1 text-center bg-black/10 text-white px-4 py-3 rounded-xl hover:bg-black/15 transition"
           >
-            Acasă
+            Home
           </Link>
         </div>
       </div>

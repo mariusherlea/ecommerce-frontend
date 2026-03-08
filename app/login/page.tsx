@@ -52,9 +52,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4"
+        className="bg-black p-6 rounded-lg shadow-lg w-full max-w-md space-y-4"
       >
-        <h1 className="text-2xl font-bold text-center">Autentificare</h1>
+        <h1 className="text-2xl font-bold text-center">Autentification</h1>
 
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
@@ -85,9 +85,9 @@ export default function LoginPage() {
         </button>
 
         <p className="text-sm text-center text-gray-600">
-          Nu ai cont?{' '}
+          No account?{' '}
           <a href="/register" className="text-blue-600 hover:underline">
-            Înregistrează-te
+            Register
           </a>
         </p>
       </form>

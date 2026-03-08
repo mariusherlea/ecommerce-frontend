@@ -116,26 +116,26 @@ export default function ProfilePage() {
   };
 
   if (!user) return null;
-  if (loading) return <p className="p-6">Se încarcă datele...</p>;
+  if (loading) return <p className="p-6">Data is loading...</p>;
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-10">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">👤 Profilul tău</h1>
+        <h1 className="text-2xl font-bold">👤 Your profile</h1>
         <button
           onClick={logout}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
         >
-          Deconectare
+          Logout
         </button>
       </div>
 
       {/* 🟢 Formul DATE PERSONALE */}
-      <div className="bg-white shadow rounded-lg p-6 space-y-4">
-        <h2 className="text-xl font-semibold">📄 Date personale</h2>
+      <div className="bg-black shadow rounded-lg p-6 space-y-4">
+        <h2 className="text-xl font-semibold">📄 Personal data</h2>
 
         <div className="space-y-2">
-          <label>Nume complet</label>
+          <label>Full name</label>
           <input
             className="w-full border p-2 rounded"
             value={fullName}
@@ -144,7 +144,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="space-y-2">
-          <label>Telefon</label>
+          <label>Phone</label>
           <input
             className="w-full border p-2 rounded"
             value={phone}
@@ -153,7 +153,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="space-y-2">
-          <label>Adresa de livrare</label>
+          <label>Delivery address</label>
           <input
             className="w-full border p-2 rounded"
             value={address}
@@ -165,22 +165,22 @@ export default function ProfilePage() {
           onClick={handleSaveProfile}
           className="w-full bg-blue-600 text-white py-2 mt-4 rounded hover:bg-blue-700"
         >
-          Salvează modificările
+          Save changes
         </button>
       </div>
 
       {/* 🟢 Istoric comenzi */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">🧾 Istoric comenzi</h2>
+        <h2 className="text-xl font-semibold mb-4">🧾 Order history</h2>
 
         {orders.length === 0 ? (
-          <p>Nu ai nicio comandă momentan.</p>
+          <p>No order yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {orders.map((order) => (
               <div
                 key={order.id}
-                className="border rounded-lg p-4 bg-white shadow"
+                className="border rounded-lg p-4 bg-black shadow"
               >
                 <p className="text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleString()}

@@ -1,11 +1,11 @@
 export default function HomePage() {
   return (
     <main className="p-10 bg-yellow-500 text-green-600 text-3xl font-bold">
-      <h1 className="text-2xl font-bold">Bine ai venit!</h1>
+      <h1 className="text-2xl font-bold">Welcome!</h1>
       <p className="mt-4">
-        Vizitează{' '}
+        Visit{' '}
         <a href="/products" className="text-blue-600 underline">
-          produsele
+          items
         </a>
         .
       </p>

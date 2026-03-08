@@ -78,21 +78,21 @@ export default function ProductsPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Produse</h1>
+      <h1 className="text-2xl font-bold mb-6">Items</h1>
 
       {/* search box */}
       <input
         type="text"
-        placeholder="Caută produse..."
+        placeholder="Search item..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="w-full p-2 border rounded mb-6"
       />
 
-      {loading && <p className="text-gray-500">Se încarcă...</p>}
+      {loading && <p className="text-gray-500">Loading...</p>}
 
       {products.length === 0 && !loading ? (
-        <p className="text-gray-500">Niciun produs găsit.</p>
+        <p className="text-gray-500">No item found.</p>
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((product) => (
@@ -106,7 +106,7 @@ export default function ProductsPage() {
                 href={`/products/${product.slug}`}
                 className="text-blue-600 hover:underline block mt-2"
               >
-                Vezi detalii →
+                See details
               </Link>
             </li>
           ))}
@@ -118,7 +118,7 @@ export default function ProductsPage() {
         <button
           onClick={() => changePage(pagination.page - 1)}
           disabled={pagination.page === 1}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-green-500 rounded disabled:opacity-50"
         >
           ← Înapoi
         </button>
@@ -130,7 +130,7 @@ export default function ProductsPage() {
         <button
           onClick={() => changePage(pagination.page + 1)}
           disabled={pagination.page === pagination.pageCount}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-green-500 rounded disabled:opacity-50"
         >
           Înainte →
         </button>

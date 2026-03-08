@@ -47,6 +47,6 @@ export default async function ProductPage(props: {
   const { slug } = await props.params; // 👈 Next.js 15 requirement
 
   const product = await getProduct(slug);
-  if (!product) return <p className="p-6">Produsul nu a fost găsit.</p>;
+  if (!product) return <p className="p-6">The item was not found</p>;
   return <ProductDetails product={product} />;
 }
