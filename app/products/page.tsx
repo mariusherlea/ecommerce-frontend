@@ -120,11 +120,11 @@ export default function ProductsPage() {
           disabled={pagination.page === 1}
           className="px-4 py-2 bg-green-500 rounded disabled:opacity-50"
         >
-          ← Înapoi
+          ← Back
         </button>
 
         <span>
-          Pagina {pagination.page} din {pagination.pageCount}
+          Page {pagination.page} din {pagination.pageCount}
         </span>
 
         <button
@@ -132,7 +132,7 @@ export default function ProductsPage() {
           disabled={pagination.page === pagination.pageCount}
           className="px-4 py-2 bg-green-500 rounded disabled:opacity-50"
         >
-          Înainte →
+          Forward →
         </button>
       </div>
     </div>

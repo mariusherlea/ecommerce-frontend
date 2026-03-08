@@ -16,7 +16,7 @@ export default function Navbar() {
       <div className="flex items-center gap-4">
         {/* 🛒 Cart Badge */}
         <Link href="/cart" className="relative">
-          Coș
+          Cart
           {cart.length > 0 && (
             <span className="absolute -top-2 -right-3 bg-green-500 text-red-600 text-xs px-2 py-1 rounded-full">
               {cart.length}
@@ -34,7 +34,7 @@ export default function Navbar() {
               onClick={logout}
               className="bg-red-400 text-white px-3 py-1 rounded"
             >
-              Delogare
+              Logout
             </button>
           </>
         ) : (
@@ -42,7 +42,7 @@ export default function Navbar() {
             href="/login"
             className="bg-blue-500 text-white px-3 py-1 rounded"
           >
-            Autentificare
+            Login
           </Link>
         )}
       </div>

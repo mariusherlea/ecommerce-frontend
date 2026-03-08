@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useCart } from "@/context/CartContext";
+import { useCart } from '@/context/CartContext';
 
 type AddToCartButtonProps = {
   id: number;
@@ -8,7 +8,11 @@ type AddToCartButtonProps = {
   price: number;
 };
 
-export default function AddToCartButton({ id, title, price }: AddToCartButtonProps) {
+export default function AddToCartButton({
+  id,
+  title,
+  price,
+}: AddToCartButtonProps) {
   const { addToCart } = useCart();
 
   const handleClick = () => {
@@ -20,7 +24,7 @@ export default function AddToCartButton({ id, title, price }: AddToCartButtonPro
       onClick={handleClick}
       className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
     >
-      Adaugă în coș
+      Add to cart
     </button>
   );
 }
