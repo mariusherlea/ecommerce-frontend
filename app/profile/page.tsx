@@ -43,7 +43,6 @@ export default function ProfilePage() {
 
     const fetchUserAndOrders = async () => {
       try {
-        // Preluăm utilizatorul
         const userRes = await fetch(
           `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me`,
           {
@@ -51,17 +50,16 @@ export default function ProfilePage() {
           },
         );
 
-        if (!userRes.ok) throw new Error('Eroare la preluarea utilizatorului');
+        if (!userRes.ok) {
+          throw new Error('Eroare la preluarea utilizatorului');
+        }
+
         const userData = await userRes.json();
 
-        // Update local & AuthContext
         setFullName(userData.fullName || '');
         setPhone(userData.phone || '');
         setAddress(userData.address || '');
 
-        login(userData, jwt); // ✔ menține Auth sincronizat
-
-        // Preluăm comenzile userului
         const ordersRes = await fetch(
           `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders?populate=items&filters[email][$eq]=${userData.email}`,
           {
@@ -69,7 +67,9 @@ export default function ProfilePage() {
           },
         );
 
-        if (!ordersRes.ok) throw new Error('Eroare la preluarea comenzilor');
+        if (!ordersRes.ok) {
+          throw new Error('Eroare la preluarea comenzilor');
+        }
 
         const ordersData = await ordersRes.json();
         setOrders(ordersData.data);
@@ -81,7 +81,7 @@ export default function ProfilePage() {
     };
 
     fetchUserAndOrders();
-  }, [jwt, login]);
+  }, [jwt]);
 
   // 🟢 Salvare date în Strapi
   const handleSaveProfile = async () => {
