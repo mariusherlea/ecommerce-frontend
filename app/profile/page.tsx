@@ -87,7 +87,7 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me`,
+        `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/profile`,
         {
           method: 'PUT',
           headers: {
