@@ -66,9 +66,12 @@ export default function ProfilePage() {
         );
 
         const ordersRes = await fetch(
-          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders?populate=items&filters[email][$eq]=${userData.email}`,
+          `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/profile/orders`,
           {
-            headers: { Authorization: `Bearer ${jwt}` },
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+            cache: 'no-store',
           },
         );
 
