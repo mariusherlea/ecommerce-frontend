@@ -57,14 +57,14 @@ export default function CartPage() {
                   <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() => decreaseQuantity(item.id)}
-                      className="px-2 py-1 bg-gray-300 rounded"
+                      className="w-9 h-9 rounded-lg bg-red-600 text-white font-bold hover:bg-red-700 active:scale-95 transition"
                     >
                       -
                     </button>
                     <span>{item.quantity}</span>
                     <button
                       onClick={() => increaseQuantity(item.id)}
-                      className="px-2 py-1 bg-gray-300 rounded"
+                      className="w-9 h-9 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 active:scale-95 transition"
                     >
                       +
                     </button>
