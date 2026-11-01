@@ -1,3 +1,4 @@
+//app/products/[slug]/ProductDetails.tsx
 'use client';
 
 import { useCart } from '@/context/CartContext';
