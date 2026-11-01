@@ -170,7 +170,6 @@ export default function ProductsPage() {
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((product) => {
             const imageUrl = getImageUrl(product.image);
-            const description = getDescriptionText(product.description);
 
             return (
               <li
@@ -191,12 +190,6 @@ export default function ProductsPage() {
 
                 <div className="p-4">
                   <h2 className="text-xl font-semibold">{product.title}</h2>
-
-                  <p className="text-gray-400 mt-2">
-                    {description
-                      ? `${description.slice(0, 110)}${description.length > 110 ? '...' : ''}`
-                      : 'No description available.'}
-                  </p>
 
                   <p className="text-gray-400 font-semibold mt-3">
                     {formatPrice(product.price)}
