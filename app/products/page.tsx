@@ -13,16 +13,6 @@ type ProductImage = {
     thumbnail?: { url?: string };
     small?: { url?: string };
   };
-  data?: {
-    url?: string;
-    attributes?: {
-      url?: string;
-      formats?: {
-        thumbnail?: { url?: string };
-        small?: { url?: string };
-      };
-    };
-  } | null;
 };
 
 type Product = {
@@ -31,7 +21,7 @@ type Product = {
   slug: string;
   price: number;
   description?: string | any[];
-  image?: ProductImage | null;
+  images?: ProductImage[] | null;
 };
 
 type PaginationMeta = {
@@ -41,19 +31,13 @@ type PaginationMeta = {
   total: number;
 };
 
-function getImageUrl(image?: ProductImage | null): string | null {
-  if (!image) return null;
+function getImageUrl(images?: ProductImage[] | null): string | null {
+  if (!images || images.length === 0) return null;
 
-  const media = image.data ?? image;
-  const attributes = 'attributes' in media ? media.attributes : undefined;
+  const image = images[0];
 
   const url =
-    attributes?.formats?.thumbnail?.url ||
-    attributes?.formats?.small?.url ||
-    attributes?.url ||
-    ('formats' in media ? media.formats?.thumbnail?.url : undefined) ||
-    ('formats' in media ? media.formats?.small?.url : undefined) ||
-    ('url' in media ? media.url : undefined);
+    image.formats?.thumbnail?.url || image.formats?.small?.url || image.url;
 
   if (!url) return null;
 
@@ -169,7 +153,7 @@ export default function ProductsPage() {
       ) : (
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((product) => {
-            const imageUrl = getImageUrl(product.image);
+            const imageUrl = getImageUrl(product.images);
 
             return (
               <li

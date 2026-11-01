@@ -5,6 +5,16 @@
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
 
+type ProductImage = {
+  url?: string;
+  formats?: {
+    large?: { url?: string };
+    medium?: { url?: string };
+    small?: { url?: string };
+    thumbnail?: { url?: string };
+  };
+};
+
 type Product = {
   id: number;
   documentId: string;
@@ -13,32 +23,16 @@ type Product = {
   description: any;
   price: number;
   inStock: string;
-  image?: {
-    url?: string;
-    formats?: {
-      large?: { url?: string };
-      medium?: { url?: string };
-    };
-    data?: {
-      url?: string;
-      attributes?: {
-        url?: string;
-      };
-    } | null;
-  } | null;
+  images?: ProductImage[] | null;
 };
 
-function getImageUrl(image: Product['image']): string | null {
-  if (!image) return null;
+function getImageUrl(images?: ProductImage[] | null): string | null {
+  if (!images || images.length === 0) return null;
 
-  const media = image.data ?? image;
-  const attributes = 'attributes' in media ? media.attributes : undefined;
+  const image = images[0];
 
   const url =
-    attributes?.url ||
-    ('formats' in media ? media.formats?.large?.url : undefined) ||
-    ('formats' in media ? media.formats?.medium?.url : undefined) ||
-    ('url' in media ? media.url : undefined);
+    image.formats?.large?.url || image.formats?.medium?.url || image.url;
 
   if (!url) return null;
 
@@ -71,7 +65,7 @@ export default function ProductDetails({ product }: { product: Product }) {
   const { addToCart } = useCart();
 
   const description = renderDescription(product.description);
-  const imageUrl = getImageUrl(product.image);
+  const imageUrl = getImageUrl(product.images);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
