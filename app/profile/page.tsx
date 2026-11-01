@@ -58,7 +58,12 @@ export default function ProfilePage() {
 
         setFullName(userData.fullName || '');
         setPhone(userData.phone || '');
-        setAddress(userData.address || '');
+        setAddress(
+          userData.address_line1 ||
+            userData.shippingAddress ||
+            userData.address ||
+            '',
+        );
 
         const ordersRes = await fetch(
           `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/orders?populate=items&filters[email][$eq]=${userData.email}`,
