@@ -1,5 +1,4 @@
-// app/api/checkout/route.ts
-
+//app/api/checkout/route.ts
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
@@ -30,6 +29,25 @@ export async function POST(req: Request) {
       );
     }
 
+    if (
+      !customer?.name?.trim() ||
+      !customer?.email?.trim() ||
+      !customer?.phone?.trim() ||
+      !customer?.address?.trim()
+    ) {
+      return NextResponse.json(
+        { error: 'Please complete all delivery information.' },
+        { status: 400 },
+      );
+    }
+
+    if (customer.address.length > 500) {
+      return NextResponse.json(
+        { error: 'Delivery address is too long.' },
+        { status: 400 },
+      );
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
     if (!baseUrl) {
@@ -37,42 +55,47 @@ export async function POST(req: Request) {
     }
 
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
-      (item: any) => ({
-        price_data: {
-          currency: 'eur',
+      (item: any) => {
+        const price = Number(item.price);
+        const quantity = Number(item.quantity);
 
-          product_data: {
-            name: item.title ?? item.name ?? 'Product',
+        if (
+          !Number.isFinite(price) ||
+          price <= 0 ||
+          !Number.isInteger(quantity) ||
+          quantity < 1
+        ) {
+          throw new Error('Invalid cart item.');
+        }
+
+        return {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: item.title ?? item.name ?? 'Product',
+            },
+            unit_amount: Math.round(price * 100),
           },
-
-          unit_amount: Math.round(Number(item.price) * 100),
-        },
-
-        quantity: Math.max(1, Number(item.quantity ?? 1)),
-      }),
+          quantity,
+        };
+      },
     );
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-
       payment_method_types: ['card'],
-
       line_items: lineItems,
 
-      customer_email: customer?.email || undefined,
+      customer_email: customer.email.trim(),
 
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-
       cancel_url: `${baseUrl}/cart`,
 
       metadata: {
-        customerId: customer?.id ? String(customer.id) : '',
-
-        customerName: customer?.name ?? '',
-
-        customerPhone: customer?.phone ?? '',
-
-        shippingAddress: customer?.address ?? '',
+        customerId: customer.id ? String(customer.id) : '',
+        customerName: customer.name.trim(),
+        customerPhone: customer.phone.trim(),
+        shippingAddress: customer.address.trim(),
       },
     });
 
@@ -80,7 +103,7 @@ export async function POST(req: Request) {
       url: session.url,
     });
   } catch (error) {
-    console.error('❌ Stripe checkout error:', error);
+    console.error('Stripe checkout error:', error);
 
     return NextResponse.json(
       {

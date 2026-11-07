@@ -1,12 +1,12 @@
-//app/cart/page.tsx
 'use client';
 
-import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
 
 export default function CartPage() {
-  const { user } = useAuth();
+  const router = useRouter();
+
   const {
     cart,
     removeFromCart,
@@ -17,24 +17,8 @@ export default function CartPage() {
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const handleCheckout = async () => {
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        cart,
-        customer: {
-          id: user?.id,
-          name: user?.fullName ?? '',
-          email: user?.email ?? '',
-          phone: user?.phone ?? '',
-          address: user?.shippingAddress ?? '', // ← CORECT
-        },
-      }),
-    });
-
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
+  const handleCheckout = () => {
+    router.push('/checkout');
   };
 
   return (
@@ -54,6 +38,7 @@ export default function CartPage() {
                 <div>
                   <h2 className="text-lg font-semibold">{item.title}</h2>
                   <p>Price: {formatPrice(item.price)}</p>
+
                   <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() => decreaseQuantity(item.id)}
@@ -61,7 +46,9 @@ export default function CartPage() {
                     >
                       -
                     </button>
+
                     <span>{item.quantity}</span>
+
                     <button
                       onClick={() => increaseQuantity(item.id)}
                       className="w-9 h-9 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 active:scale-95 transition"
@@ -70,10 +57,12 @@ export default function CartPage() {
                     </button>
                   </div>
                 </div>
+
                 <div className="text-right">
                   <p className="font-semibold">
                     Total: {formatPrice(item.price * item.quantity)}
                   </p>
+
                   <button
                     onClick={() => removeFromCart(item.id)}
                     className="mt-2 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
@@ -85,21 +74,23 @@ export default function CartPage() {
             ))}
           </ul>
 
-          <div className="mt-6 flex justify-between items-center">
+          <div className="mt-6 flex flex-wrap justify-between items-center gap-4">
             <button
               onClick={clearCart}
               className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             >
               Empty cart
             </button>
+
             <div className="text-xl font-bold">
-              <p>Total general:{formatPrice(total)}</p>{' '}
+              <p>Total general: {formatPrice(total)}</p>
             </div>
+
             <button
               onClick={handleCheckout}
-              className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
             >
-              Pay now
+              Continue to checkout
             </button>
           </div>
         </>

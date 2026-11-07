@@ -38,6 +38,12 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
 
+    console.log('STRIPE SESSION METADATA:', {
+      customerName: session.metadata?.customerName,
+      customerPhone: session.metadata?.customerPhone,
+      shippingAddress: session.metadata?.shippingAddress,
+    });
+
     try {
       if (!process.env.STRAPI_API_URL)
         throw new Error('STRAPI_API_URL missing');
@@ -48,10 +54,17 @@ export async function POST(req: Request) {
         session.id,
       );
 
-      const address = session.customer_details?.address;
-      const formattedAddress = address
-        ? `${address.line1 ?? ''}, ${address.city ?? ''}, ${address.postal_code ?? ''}, ${address.country ?? ''}`
-        : null;
+      const formattedAddress =
+        session.metadata?.shippingAddress ||
+        [
+          session.customer_details?.address?.line1,
+          session.customer_details?.address?.city,
+          session.customer_details?.address?.postal_code,
+          session.customer_details?.address?.country,
+        ]
+          .filter(Boolean)
+          .join(', ') ||
+        null;
 
       const res = await fetch(`${process.env.STRAPI_API_URL}/api/orders`, {
         method: 'POST',
@@ -62,9 +75,16 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           data: {
             stripeSessionId: session.id,
-            email: session.customer_details?.email ?? null,
-            phone: session.customer_details?.phone ?? null,
+            email:
+              session.customer_details?.email ?? session.customer_email ?? null,
+
+            phone:
+              session.metadata?.customerPhone ??
+              session.customer_details?.phone ??
+              null,
+
             address: formattedAddress,
+            shippingAddress: formattedAddress,
             total: session.amount_total ? session.amount_total / 100 : 0,
             stare: 'paid',
             items: lineItems.data.map((item) => ({

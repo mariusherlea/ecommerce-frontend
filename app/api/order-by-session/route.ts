@@ -38,8 +38,16 @@ export async function GET(req: Request) {
     cache: 'no-store',
   });
 
+  console.log('STRAPI URL:', STRAPI_API_URL);
+  console.log('TOKEN EXISTS:', Boolean(STRAPI_API_TOKEN));
+  console.log('TOKEN LENGTH:', STRAPI_API_TOKEN?.length);
+
   if (!res.ok) {
     const text = await res.text().catch(() => '');
+
+    console.error('STRAPI STATUS:', res.status);
+    console.error('STRAPI ERROR:', text);
+
     return NextResponse.json(
       { error: 'Failed to fetch order from Strapi', details: text },
       { status: res.status },
