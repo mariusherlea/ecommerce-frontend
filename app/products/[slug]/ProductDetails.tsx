@@ -2,6 +2,9 @@
 
 'use client';
 
+'use client';
+
+import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/formatPrice';
 
@@ -68,45 +71,118 @@ export default function ProductDetails({ product }: { product: Product }) {
   const imageUrl = getImageUrl(product.images);
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={product.title}
-          className="w-full max-h-[420px] object-cover rounded-xl mb-6"
-        />
-      ) : (
-        <div className="w-full h-64 bg-gray-900 rounded-xl mb-6 flex items-center justify-center text-gray-500">
-          No image available
+    <main className="min-h-screen bg-[#faf9f6] text-[#253b2d]">
+      <section className="mx-auto max-w-7xl px-6 py-10 md:py-16">
+        {/* Breadcrumb */}
+        <div className="mb-10 flex items-center gap-2 text-sm text-[#858b81]">
+          <Link href="/" className="transition hover:text-[#78a66a]">
+            Home
+          </Link>
+
+          <span>/</span>
+
+          <Link href="/products" className="transition hover:text-[#78a66a]">
+            Shop
+          </Link>
+
+          <span>/</span>
+
+          <span className="font-medium text-[#253b2d]">{product.title}</span>
         </div>
-      )}
 
-      <h1 className="text-3xl font-bold">{product.title}</h1>
+        {/* Product Layout */}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-20">
+          {/* Product Image */}
+          <div className="overflow-hidden rounded-3xl border border-[#e9e9df] bg-white shadow-sm">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={product.title}
+                className="aspect-square w-full object-cover transition duration-700 hover:scale-[1.02]"
+              />
+            ) : (
+              <div className="flex aspect-square items-center justify-center bg-[#edf1e9] text-6xl">
+                🥗
+              </div>
+            )}
+          </div>
 
-      <p className="text-gray-400 mt-4">{formatPrice(product.price)}</p>
+          {/* Product Information */}
+          <div className="py-4">
+            <p className="text-sm font-bold uppercase tracking-widest text-[#78a66a]">
+              Fresh food, made easy
+            </p>
 
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-3">Description</h2>
+            <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
+              {product.title}
+              <span className="text-[#78a66a]">.</span>
+            </h1>
 
-        <p className="text-gray-300 whitespace-pre-line leading-relaxed">
-          {description}
-        </p>
-      </div>
+            <p className="mt-6 text-3xl font-extrabold text-[#253b2d]">
+              {formatPrice(product.price)}
+            </p>
 
-      <p className="mt-6">În stoc: {product.inStock}</p>
+            <div className="my-8 h-px bg-[#e9e9df]" />
 
-      <button
-        onClick={() =>
-          addToCart({
-            id: product.id,
-            title: product.title,
-            price: product.price,
-          })
-        }
-        className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-      >
-        Add to cart
-      </button>
-    </div>
+            {/* Description */}
+            <div>
+              <h2 className="text-lg font-bold">About this product</h2>
+
+              <p className="mt-4 whitespace-pre-line text-base leading-8 text-[#777d73]">
+                {description}
+              </p>
+            </div>
+
+            {/* Stock */}
+            <div className="mt-8 flex items-center gap-3">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#78a66a] opacity-40" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#78a66a]" />
+              </span>
+
+              <p className="text-sm font-medium text-[#527c50]">
+                In stock: {product.inStock}
+              </p>
+            </div>
+
+            {/* Add to Cart */}
+            <button
+              onClick={() =>
+                addToCart({
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                })
+              }
+              className="mt-8 w-full rounded-full bg-[#253b2d] px-8 py-4 text-base font-semibold text-white shadow-sm transition duration-300 hover:bg-[#3e6047] active:scale-[0.98] sm:w-auto sm:min-w-[240px]"
+            >
+              Add to cart
+            </button>
+
+            {/* Additional Information */}
+            <div className="mt-10 grid grid-cols-2 gap-5 border-t border-[#e9e9df] pt-7">
+              <div>
+                <p className="font-bold text-[#253b2d]">Fresh</p>
+                <p className="mt-1 text-sm text-[#858b81]">
+                  Quality ingredients
+                </p>
+              </div>
+
+              <div>
+                <p className="font-bold text-[#253b2d]">Easy</p>
+                <p className="mt-1 text-sm text-[#858b81]">Simple ordering</p>
+              </div>
+            </div>
+
+            <Link
+              href="/products"
+              className="mt-10 inline-flex items-center gap-2 text-sm font-semibold text-[#78a66a] transition hover:text-[#527c50]"
+            >
+              ← Back to all products
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

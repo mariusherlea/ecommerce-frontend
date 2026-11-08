@@ -1,6 +1,14 @@
-"use client";
+//context/CartContext.tsx
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+'use client';
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 
 type CartItem = {
   id: number;
@@ -11,7 +19,7 @@ type CartItem = {
 
 type CartContextType = {
   cart: CartItem[];
-  addToCart: (item: Omit<CartItem, "quantity">) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
   removeFromCart: (id: number) => void;
   clearCart: () => void;
   increaseQuantity: (id: number) => void;
@@ -20,27 +28,24 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-
-
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-useEffect(() => {
-  const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-  setCart(savedCart);
-}, []);
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    setCart(savedCart);
+  }, []);
 
-useEffect(() => {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}, [cart]);
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
 
-
-  const addToCart = (item: Omit<CartItem, "quantity">) => {
+  const addToCart = (item: Omit<CartItem, 'quantity'>) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
         );
       } else {
         return [...prev, { ...item, quantity: 1 }];
@@ -54,30 +59,33 @@ useEffect(() => {
 
   const clearCart = () => {
     setCart([]);
-     localStorage.removeItem("cart"); // goliți și localStorage
+    localStorage.removeItem('cart'); // goliți și localStorage
   };
 
   const increaseQuantity = (id: number) => {
     setCart((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, quantity: i.quantity + 1 } : i
-      )
+      prev.map((i) => (i.id === id ? { ...i, quantity: i.quantity + 1 } : i)),
     );
   };
 
   const decreaseQuantity = (id: number) => {
     setCart((prev) =>
       prev
-        .map((i) =>
-          i.id === id ? { ...i, quantity: i.quantity - 1 } : i
-        )
-        .filter((i) => i.quantity > 0)
+        .map((i) => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
+        .filter((i) => i.quantity > 0),
     );
   };
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        increaseQuantity,
+        decreaseQuantity,
+      }}
     >
       {children}
     </CartContext.Provider>
@@ -86,6 +94,6 @@ useEffect(() => {
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart must be used within a CartProvider");
+  if (!context) throw new Error('useCart must be used within a CartProvider');
   return context;
 }
