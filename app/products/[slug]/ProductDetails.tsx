@@ -133,18 +133,6 @@ export default function ProductDetails({ product }: { product: Product }) {
               </p>
             </div>
 
-            {/* Stock */}
-            <div className="mt-8 flex items-center gap-3">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#78a66a] opacity-40" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#78a66a]" />
-              </span>
-
-              <p className="text-sm font-medium text-[#527c50]">
-                In stock: {product.inStock}
-              </p>
-            </div>
-
             {/* Add to Cart */}
             <button
               onClick={() =>
